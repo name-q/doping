@@ -18,8 +18,14 @@
     "url": "https://github.com/name-q/doping/issues",
     "email": "1620206666@qq.com"
   },
-  "engines": { "vscode": "^1.86.0" },
-  "categories": ["Other"],
+  "engines": {
+    "vscode": "^1.86.0"
+  },
+  "categories": [
+    "Other",
+    "Debuggers",
+    "Extension Packs"
+  ],
   "main": "./out/extension.js",
   "activationEvents": [
     "onStartupFinished",
@@ -86,5 +92,12 @@
     "eslint": "^9.0.0"
   },
   "dependencies": {},
-  "keywords": ["npm", "scripts", "terminal", "package-manager", "pnpm", "yarn"]
+  "keywords": [
+    "npm",
+    "scripts",
+    "terminal",
+    "package-manager",
+    "pnpm",
+    "yarn"
+  ]
 }
