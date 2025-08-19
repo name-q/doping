@@ -1,0 +1,90 @@
+{
+  "name": "doping",
+  "displayName": "doping",
+  "description": "One-click run scripts from root & subprojects with toggleable terminals.",
+  "version": "0.0.1",
+  "publisher": "name-q",
+  "author": {
+    "name": "name-q",
+    "email": "1620206666@qq.com",
+    "url": "https://github.com/name-q"
+  },
+  "homepage": "https://github.com/name-q/doping",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/name-q/doping.git"
+  },
+  "bugs": {
+    "url": "https://github.com/name-q/doping/issues",
+    "email": "1620206666@qq.com"
+  },
+  "engines": { "vscode": "^1.86.0" },
+  "categories": ["Other"],
+  "main": "./out/extension.js",
+  "activationEvents": [
+    "onStartupFinished",
+    "workspaceContains:.doping",
+    "workspaceContains:package.json",
+    "onCommand:doping.openMenu",
+    "onCommand:doping.stopAll"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "doping.openMenu",
+        "title": "Doping: Run Script",
+        "icon": {
+          "light": "images/doping-light.svg",
+          "dark": "images/doping-dark.svg"
+        }
+      },
+      {
+        "command": "doping.stopAll",
+        "title": "Doping: Stop All Running",
+        "icon": {
+          "light": "images/stop-light.svg",
+          "dark": "images/stop-dark.svg"
+        }
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "doping.openMenu",
+          "when": "true",
+          "group": "navigation"
+        },
+        {
+          "command": "doping.stopAll",
+          "when": "doping.scriptsRunning",
+          "group": "navigation"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "doping.openMenu",
+        "key": "ctrl+d",
+        "mac": "cmd+d",
+        "when": "editorTextFocus"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "build": "tsc -p ./",
+    "watch": "tsc -w -p ./",
+    "lint": "eslint src --ext .ts"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/node": "^20.10.0",
+    "@types/vscode": "^1.86.0",
+    "jsonc-parser": "^3.3.1",
+    "minimatch": "^9.0.3",
+    "typescript": "^5.4.0",
+    "eslint": "^9.0.0"
+  },
+  "dependencies": {},
+  "keywords": ["npm", "scripts", "terminal", "package-manager", "pnpm", "yarn"]
+}
