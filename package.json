@@ -28,7 +28,9 @@
   "activationEvents": [
     "onStartupFinished",
     "workspaceContains:.doping",
-    "workspaceContains:package.json"
+    "workspaceContains:package.json",
+    "onCommand:doping.openMenu",
+    "onCommand:doping.stopAll"
   ],
   "contributes": {
     "commands": [
@@ -73,21 +75,21 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run build",
     "build": "tsc -p ./",
-    "watch": "tsc -w -p ./",
-    "lint": "eslint src --ext .ts"
+    "bundle": "esbuild src/extension.ts --bundle --platform=node --format=cjs --external:vscode --main-fields=module,main --outfile=out/extension.js",
+    "vscode:prepublish": "esbuild src/extension.ts --bundle --platform=node --format=cjs --external:vscode --main-fields=module,main --outfile=out/extension.js",
+    "watch": "tsc -w -p ./"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
     "@types/node": "^20.10.0",
     "@types/vscode": "^1.86.0",
+    "esbuild": "^0.25.9",
+    "eslint": "^9.0.0",
     "jsonc-parser": "^3.3.1",
     "minimatch": "^9.0.3",
-    "typescript": "^5.4.0",
-    "eslint": "^9.0.0"
+    "typescript": "^5.4.0"
   },
-  "dependencies": {},
   "keywords": [
     "npm",
     "scripts",
@@ -95,5 +97,14 @@
     "package-manager",
     "pnpm",
     "yarn"
+  ],
+  "files": [
+    "out/**",
+    "images/**",
+    "README.md",
+    "LICENSE",
+    "package.nls.json",
+    "package.nls.zh-cn.json",
+    "README.zh.md"
   ]
 }
