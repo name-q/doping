@@ -19,7 +19,8 @@
     "email": "1620206666@qq.com"
   },
   "engines": {
-    "vscode": "^1.86.0"
+    "vscode": "^1.86.0",
+    "cursor": "^0.1.0"
   },
   "categories": [
     "Other"
