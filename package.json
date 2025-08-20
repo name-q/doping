@@ -28,15 +28,13 @@
   "activationEvents": [
     "onStartupFinished",
     "workspaceContains:.doping",
-    "workspaceContains:package.json",
-    "onCommand:doping.openMenu",
-    "onCommand:doping.stopAll"
+    "workspaceContains:package.json"
   ],
   "contributes": {
     "commands": [
       {
         "command": "doping.openMenu",
-        "title": "Doping: Run Script",
+        "title": "%doping.openMenu.title%",
         "icon": {
           "light": "images/doping-light.svg",
           "dark": "images/doping-dark.svg"
@@ -44,7 +42,7 @@
       },
       {
         "command": "doping.stopAll",
-        "title": "Doping: Stop All Running",
+        "title": "%doping.stopAll.title%",
         "icon": {
           "light": "images/stop-light.svg",
           "dark": "images/stop-dark.svg"
