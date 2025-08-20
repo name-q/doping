@@ -17,6 +17,47 @@ interface TermRecord {
 
 const terminals = new Map<TerminalKey, TermRecord>();
 
+const i18n = {
+  en: {
+    noWorkspace: "doping: Please open a workspace first.",
+    noScripts: "doping: No scripts found to display.",
+    selectProject: "Select project",
+    installDeps: "Install dependencies",
+    missingNodeModules: "(missing node_modules)",
+    selectScript: "Select script to run/stop (🟢 running, ⚪ stopped)",
+    projectScript: "Project {0} — Select script (🟢 running, ⚪ stopped)",
+    running: "(running)",
+    stopped: "Stopped: {0} {1}",
+    runningMsg: "Running: {0} {1}",
+    allStopped: "All doping terminals stopped.",
+    configError: "doping: Failed to parse .doping config, using defaults. {0}"
+  },
+  cn: {
+    noWorkspace: "doping: 请先打开一个工作区。",
+    noScripts: "doping: 未找到可展示的 scripts。",
+    selectProject: "选择项目",
+    installDeps: "安装依赖",
+    missingNodeModules: "(缺少 node_modules)",
+    selectScript: "选择要运行/停止的脚本（🟢 运行中, ⚪ 未运行）",
+    projectScript: "项目 {0} — 选择脚本（🟢 运行中, ⚪ 未运行）",
+    running: "(运行中)",
+    stopped: "已停止: {0} {1}",
+    runningMsg: "正在运行: {0} {1}",
+    allStopped: "所有 doping 终端已停止。",
+    configError: "doping: 解析 .doping 失败，将使用默认设置。{0}"
+  }
+};
+
+let currentLang: 'en' | 'cn' = 'en';
+
+function t(key: keyof typeof i18n.en, ...args: string[]): string {
+  let text = i18n[currentLang][key];
+  args.forEach((arg, i) => {
+    text = text.replace(`{${i}}`, arg);
+  });
+  return text;
+}
+
 export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand("doping.openMenu", openMenu),
@@ -38,12 +79,13 @@ export function deactivate() {}
 async function openMenu() {
   const ws = vscode.workspace.workspaceFolders?.[0];
   if (!ws) {
-    vscode.window.showInformationMessage("doping: 请先打开一个工作区。");
+    vscode.window.showInformationMessage(t('noWorkspace'));
     return;
   }
 
   const root = ws.uri.fsPath;
   const config = await readConfig(root);
+  currentLang = config.cn ? 'cn' : 'en';
   const projects = await resolveProjects(root, config);
 
   const projectScripts: { project: ProjectResolved; scripts: Record<string, string> }[] = [];
@@ -59,7 +101,7 @@ async function openMenu() {
   }
 
   if (projectScripts.length === 0) {
-    vscode.window.showInformationMessage("doping: 未找到可展示的 scripts。");
+    vscode.window.showInformationMessage(t('noScripts'));
     return;
   }
 
@@ -74,7 +116,7 @@ async function openMenu() {
         detail: `${p.project.packageManager} @ ${p.project.relPath}`,
         value: p
       })),
-      { placeHolder: "选择项目" }
+      { placeHolder: t('selectProject') }
     );
     if (!projPick) return;
     await showProjectScriptsMenu(projPick.value);
@@ -91,8 +133,8 @@ async function showOneShotMenu(list: { project: ProjectResolved; scripts: Record
     if (!hasNodeModules(entry.project.absPath)) {
       const installCmd = buildInstallCommand(entry.project.packageManager);
       items.push({
-        label: `$(cloud-download) Install dependencies`,
-        description: `(missing node_modules)`,
+        label: `$(cloud-download) ${t('installDeps')}`,
+        description: t('missingNodeModules'),
         detail: `${installCmd}`,
         action: async () => {
           await runOneShot(entry.project, installCmd, "install");
@@ -107,7 +149,7 @@ async function showOneShotMenu(list: { project: ProjectResolved; scripts: Record
 
       const prefix = running ? "🟢 " : "⚪ ";
       const label = `${prefix}${scriptName}`;
-      const description = running ? "(running)" : undefined;
+      const description = running ? t('running') : undefined;
       const detail = `${buildRunCommand(entry.project.packageManager, scriptName)} — ${cmd}`;
 
       items.push({
@@ -121,7 +163,7 @@ async function showOneShotMenu(list: { project: ProjectResolved; scripts: Record
     }
   }
 
-  const picked = await vscode.window.showQuickPick(items, { placeHolder: "选择要运行/停止的脚本（🟢 运行中, ⚪ 未运行）" });
+  const picked = await vscode.window.showQuickPick(items, { placeHolder: t('selectScript') });
   if (picked && picked.action) {
     await picked.action();
   }
@@ -134,8 +176,8 @@ async function showProjectScriptsMenu(entry: { project: ProjectResolved; scripts
   if (!hasNodeModules(entry.project.absPath)) {
     const installCmd = buildInstallCommand(entry.project.packageManager);
     items.push({
-      label: `$(cloud-download) Install dependencies`,
-      description: `(missing node_modules)`,
+      label: `$(cloud-download) ${t('installDeps')}`,
+      description: t('missingNodeModules'),
       detail: `${installCmd}`,
       action: async () => {
         await runOneShot(entry.project, installCmd, "install");
@@ -150,7 +192,7 @@ async function showProjectScriptsMenu(entry: { project: ProjectResolved; scripts
 
     const prefix = running ? "🟢 " : "⚪ ";
     const label = `${prefix}${scriptName}`;
-    const description = running ? "(running)" : undefined;
+    const description = running ? t('running') : undefined;
     const detail = `${buildRunCommand(entry.project.packageManager, scriptName)} — ${cmd}`;
 
     items.push({
@@ -163,7 +205,7 @@ async function showProjectScriptsMenu(entry: { project: ProjectResolved; scripts
     });
   }
 
-  const picked = await vscode.window.showQuickPick(items, { placeHolder: `项目 ${entry.project.name} — 选择脚本（🟢 运行中, ⚪ 未运行）` });
+  const picked = await vscode.window.showQuickPick(items, { placeHolder: t('projectScript', entry.project.name) });
   if (picked && picked.action) {
     await picked.action();
   }
@@ -180,7 +222,7 @@ async function toggleRun(project: ProjectResolved, script: string) {
     finally {
       terminals.delete(key);
       refreshRunningContext();
-      vscode.window.showInformationMessage(`Stopped: ${project.name} ${script}`);
+      vscode.window.showInformationMessage(t('stopped', project.name, script));
     }
     return;
   }
@@ -197,7 +239,7 @@ async function toggleRun(project: ProjectResolved, script: string) {
   const cmd = buildRunCommand(project.packageManager, script);
   terminal.sendText(cmd, true);
 
-  vscode.window.showInformationMessage(`Running: ${project.name} ${script}`);
+  vscode.window.showInformationMessage(t('runningMsg', project.name, script));
 }
 
 /** 一次性执行（用于 Install） */
@@ -214,7 +256,7 @@ function stopAll() {
   }
   terminals.clear();
   refreshRunningContext();
-  vscode.window.showInformationMessage("All doping terminals stopped.");
+  vscode.window.showInformationMessage(t('allStopped'));
 }
 
 function refreshRunningContext() {
@@ -252,7 +294,7 @@ async function readConfig(root: string): Promise<DopingConfig> {
   try {
     return (jsonc.parse(text) as DopingConfig) || {};
   } catch (e) {
-    vscode.window.showWarningMessage(`doping: 解析 .doping 失败，将使用默认设置。${String(e)}`);
+    vscode.window.showWarningMessage(t('configError', String(e)));
     return {};
   }
 }

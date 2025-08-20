@@ -11,6 +11,7 @@ export interface DopingProject {
 
 export interface DopingConfig {
   projects?: DopingProject[];
+  cn?: boolean; // 是否使用中文
 }
 
 export interface ProjectResolved {
