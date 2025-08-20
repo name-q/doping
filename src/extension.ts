@@ -85,7 +85,7 @@ async function showOneShotMenu(list: { project: ProjectResolved; scripts: Record
   const items: (vscode.QuickPickItem & { action?: () => Promise<void> })[] = [];
   for (const entry of list) {
     // 项目分隔符
-    items.push({ label: `──────── ${entry.project.name} ────────`, kind: vscode.QuickPickItemKind.Separator });
+    items.push({ label: `📦 ${entry.project.name}`, kind: vscode.QuickPickItemKind.Separator });
 
     // 缺依赖时，先插入 Install 项
     if (!hasNodeModules(entry.project.absPath)) {
@@ -105,7 +105,7 @@ async function showOneShotMenu(list: { project: ProjectResolved; scripts: Record
       const key = makeKey(entry.project.absPath, scriptName);
       const running = terminals.get(key)?.running === true;
 
-      const prefix = running ? "● " : "○ ";
+      const prefix = running ? "🟢 " : "⚪ ";
       const label = `${prefix}${scriptName}`;
       const description = running ? "(running)" : undefined;
       const detail = `${buildRunCommand(entry.project.packageManager, scriptName)} — ${cmd}`;
@@ -121,7 +121,7 @@ async function showOneShotMenu(list: { project: ProjectResolved; scripts: Record
     }
   }
 
-  const picked = await vscode.window.showQuickPick(items, { placeHolder: "选择要运行/停止的脚本（● 运行中, ○ 未运行）" });
+  const picked = await vscode.window.showQuickPick(items, { placeHolder: "选择要运行/停止的脚本（🟢 运行中, ⚪ 未运行）" });
   if (picked && picked.action) {
     await picked.action();
   }
@@ -148,7 +148,7 @@ async function showProjectScriptsMenu(entry: { project: ProjectResolved; scripts
     const key = makeKey(entry.project.absPath, scriptName);
     const running = terminals.get(key)?.running === true;
 
-    const prefix = running ? "● " : "○ ";
+    const prefix = running ? "🟢 " : "⚪ ";
     const label = `${prefix}${scriptName}`;
     const description = running ? "(running)" : undefined;
     const detail = `${buildRunCommand(entry.project.packageManager, scriptName)} — ${cmd}`;
@@ -163,7 +163,7 @@ async function showProjectScriptsMenu(entry: { project: ProjectResolved; scripts
     });
   }
 
-  const picked = await vscode.window.showQuickPick(items, { placeHolder: `项目 ${entry.project.name} — 选择脚本（● 运行中, ○ 未运行）` });
+  const picked = await vscode.window.showQuickPick(items, { placeHolder: `项目 ${entry.project.name} — 选择脚本（🟢 运行中, ⚪ 未运行）` });
   if (picked && picked.action) {
     await picked.action();
   }
