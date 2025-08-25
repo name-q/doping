@@ -61,17 +61,16 @@ function t(key: keyof typeof i18n.en, ...args: string[]): string {
 export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand("doping.openMenu", openMenu),
-    vscode.commands.registerCommand("doping.stopAll", stopAll)
-  );
-
-  vscode.window.onDidCloseTerminal((t) => {
-    for (const [key, rec] of terminals) {
-      if (rec.terminal === t) {
-        terminals.delete(key);
+    vscode.commands.registerCommand("doping.stopAll", stopAll),
+    vscode.window.onDidCloseTerminal((t) => {
+      for (const [key, rec] of terminals) {
+        if (rec.terminal === t) {
+          terminals.delete(key);
+        }
       }
-    }
-    refreshRunningContext();
-  });
+      refreshRunningContext();
+    })
+  );
 }
 
 export function deactivate() {}
